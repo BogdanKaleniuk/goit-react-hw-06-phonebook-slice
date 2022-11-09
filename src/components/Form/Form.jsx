@@ -1,10 +1,16 @@
-import PropTypes from 'prop-types';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { FormBook, Input, Label, Btn, Error } from './Form.styled';
+import { useDispatch, useSelector } from 'react-redux';
+// import { deleteContact } from '../../redux/contactsSlice';
+// import { setFilter } from '../../redux/filterSlice';
+import { addContact } from 'redux/contactsSlice';
+// import { getContacts } from 'redux/selectors';
+
+import { getContacts } from '../../redux/selectors';
 
 let schema = yup.object().shape({
-     name: yup
+  name: yup
     .string()
     .matches(
       /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/,
@@ -20,33 +26,48 @@ let schema = yup.object().shape({
       'Phone number must be digits and can contain spaces, dashes, parentheses and can start with +'
     )
     .required('Please, enter correct number'),
-})
+});
 
 const initialValues = {
   name: '',
   number: '',
 };
 
-export default function FormEl({ onSubmit }) {
-    const handleSubmit = (values, { resetForm }) => {
-    onSubmit(values);
+export default function FormEl() {
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+
+  const handleSubmit = (values, { resetForm }) => {
+    const findDuplicateName = name => {
+      return contacts.contactList.find(item => item.name === name);
+    };
+    const { name } = values;
+    // const nameToRegistr = name;
+    if (findDuplicateName(contacts.contactList, name)) {
+      alert(`is already in your contacts`);
+      return;
+    }
+
+    dispatch(addContact(values));
+
     resetForm();
   };
 
-return (
-    <Formik
-    initialValues={initialValues}
-    validationSchema={schema}
-    onSubmit={handleSubmit}
-    >
-    <FormBook autoComplete="off">
+  return (
+    <>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={schema}
+      >
+        <FormBook autoComplete="off">
           <Label>
             Name
             <Input
               type="text"
               placeholder="Enter name"
               name="name"
-              title="Name may contain only letters"
+              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             />
             <Error name="name" component="div" />
           </Label>
@@ -54,19 +75,16 @@ return (
             Number
             <Input
               type="tel"
-              placeholder="+380"
+              placeholder="Enter phone"
               name="number"
               title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             />
             <Error name="number" component="div" />
           </Label>
 
-          <Btn type="submit">Add contact</Btn>
+          <Btn type="submit">Add contact </Btn>
         </FormBook>
-     </Formik>
-     )
-};
-
-FormEl.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
+      </Formik>
+    </>
+  );
+}

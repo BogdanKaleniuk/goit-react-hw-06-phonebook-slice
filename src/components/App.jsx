@@ -2,54 +2,18 @@ import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 import Message from './Message/Message';
 import FormEl from './Form/Form';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { addContact, removeContact, filterContacts} from '../store/contacts'
+// import { useLocalSrorage } from './hooks/useLocalSrorage';
 
 export default function App() {
-
-  const dispatch = useDispatch()
-
-  const contacts = useSelector(state => state.contacts.items)
-  const query = useSelector(state => state.contacts.filter)
-
-  const handlerSubmit = ({ name, number }) => {
-    if (contacts.find(item => item.name.toLowerCase() === name.toLowerCase())) {
-       alert('Такий контакт вже існує');
-      return;
-    }
-    dispatch(addContact(name, number));
-};
-  
- const onFilterChange = e => {
-    dispatch(filterContacts(e.currentTarget.value));
-  };
-
-  const deleteContact = id => {
-    dispatch(removeContact(id))
-  }
-
   return (
-  <div>
-        <Message title="Phonebook" />
-        <FormEl onSubmit={handlerSubmit} />
-        <Filter
-          Message="Find contacts by name"
-          filter={query}
-          onChange={onFilterChange}
-        />
-        {contacts.length > 0 && (
-          <ContactList
-            title="Contacts"
-            contacts={contacts}
-            onDeleteContact={deleteContact}
-          />
-        )}
-      </div>
-  )
+    <div>
+      <Message title="Phonebook" />
+      <FormEl />
+      <Filter title="Find contacts by name" />
+      <ContactList title="Contacts" />
+    </div>
+  );
 }
-
-
 
 // import { Component } from 'react';
 // import { nanoid } from 'nanoid'
@@ -59,7 +23,6 @@ export default function App() {
 // import FormEl from './Form/Form';
 
 // export default class App extends Component {
-
 
 // state = {
 //   contacts: [
@@ -90,7 +53,7 @@ export default function App() {
 //     if (this.findDuplicateName(nameToRegistr)) {
 //       alert('Такий контакт вже існує');
 //       return;
-//     } 
+//     }
 //     this.addContact(nameToRegistr, number);
 // };
 
@@ -118,7 +81,6 @@ export default function App() {
 //     );
 //   };
 
-
 //   visibleContacts = () => {
 //     const { contacts, filter } = this.state;
 //     const normalizedFilter = filter.toLowerCase();
@@ -126,7 +88,7 @@ export default function App() {
 //       contact.name.includes(normalizedFilter)
 //     );
 //   };
-  
+
 //   onFilterChange = e => {
 //     this.setState({ filter: e.currentTarget.value });
 //   };
@@ -161,6 +123,3 @@ export default function App() {
 // }
 
 // };
-
-
-
